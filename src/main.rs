@@ -4,6 +4,9 @@ use alloy::primitives::Address;
 use std::error::Error;
 use alloy::sol;
 
+#[path = "../level2-balance-query/balance.rs"]
+mod balance;
+
 sol! { 
    #[sol(rpc)] 
    contract HelloWeb3 { 
@@ -29,7 +32,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let contract = HelloWeb3::new(contract_address, provider);
     
     let result = contract.hello_web3().call().await?;
-    println!("合约返回: {}", result);
+    println!("TASK1_合约返回: {}", result);
+
+    // 查询 metamask ETH 余额
+    let balance = balance::query_eth_balance().await?;
+    println!("TASK2_查询余额{} ", balance);
  
     Ok(())
 }
