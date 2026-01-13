@@ -15,6 +15,8 @@ pub struct NetworkConfig {
     pub wallet_address: Option<String>,
     /// HelloWeb3 合约地址（可选）
     pub hello_web3_contract: Option<String>,
+    /// 转账目标地址（可选）
+    pub target_address: Option<String>,
 }
 
 impl NetworkConfig {
@@ -27,6 +29,7 @@ impl NetworkConfig {
             base_gas_limit: 21_000,
             wallet_address: Some("0x7531d89aeffAc1B42DfF2e4B0Af1862d89041C35".to_string()),
             hello_web3_contract: Some("0x3f1f78ED98Cd180794f1346F5bD379D5Ec47DE90".to_string()),
+            target_address: Some("0xd8Ae7187B36aA6F44C0634A63EBe383A6bb65dF8".to_string()),
         }
     }
 
@@ -40,6 +43,7 @@ impl NetworkConfig {
             base_gas_limit: 21_000,
             wallet_address: None,  // 主网地址需要用户配置
             hello_web3_contract: None,  // 主网合约需要用户配置
+            target_address: None,
         }
     }
 
@@ -52,6 +56,7 @@ impl NetworkConfig {
         base_gas_limit: u64,
         wallet_address: Option<String>,
         hello_web3_contract: Option<String>,
+        target_address: Option<String>,
     ) -> Self {
         Self {
             name,
@@ -60,6 +65,7 @@ impl NetworkConfig {
             base_gas_limit,
             wallet_address,
             hello_web3_contract,
+            target_address,
         }
     }
 }

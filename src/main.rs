@@ -4,7 +4,7 @@ mod utils;
 mod contract;  // 新增合约模块
 
 use config::NetworkConfig;
-use net::{create_provider, estimate_transfer_fee, get_gas_price};
+use net::{create_provider, estimate_transfer_fee, get_gas_price,execute_transfer};
 use std::error::Error;
 use utils::{wei_to_eth, wei_to_gwei};
 
@@ -73,5 +73,30 @@ async fn main() -> Result<(), Box<dyn Error>> {
         gas_price, config.base_gas_limit, estimated_gas_fee
     );
 
+
+    // TASK4: ETH 转账
+    println!("\n=== TASK4 ETH 转账 ===\n");
+    
+    // 转账金额 (ETH)
+    let transfer_amount = 0.0001; 
+
+    if let Some(target_addr) = &config.target_address {
+        println!("📝 准备转账:");
+        println!("   目标地址: {}", target_addr);
+        println!("   转账金额: {} ETH", transfer_amount);
+        
+        // 执行转账
+        match net::execute_transfer(provider.clone(), target_addr, transfer_amount, config.chain_id).await {
+            Ok(tx_hash) => {
+                println!("✅ 转账成功!");
+                println!("   交易 Hash: {}", tx_hash);
+                println!("   浏览器查看: https://sepolia.arbiscan.io/tx/{}", tx_hash);
+            },
+            Err(e) => eprintln!("❌ 转账失败: {}", e),
+        }
+
+    } else {
+        println!("⚠️  未配置目标地址，跳过转账");
+    }
     Ok(())
 }
