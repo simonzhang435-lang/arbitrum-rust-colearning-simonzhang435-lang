@@ -45,3 +45,10 @@
 ![交易网址：https://sepolia.arbiscan.io/tx/0x7cb4c08c4ed9e860400af86fdfc43c14cf849561bb67a72dd835aa8c1212aadf](/images/image-14.png)
 
 ![交易脚本执行日志：](/images/image-15.png)
+
+
+=============================TASK5:Arbitrum测试网合约调用
+
+![合约调用结果：](/images/image-16.png)
+
+![ERC20 USDC合约](/images/image-17.png)

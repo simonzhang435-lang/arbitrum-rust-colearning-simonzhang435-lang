@@ -2507,6 +2507,8 @@ dependencies = [
  "alloy",
  "dotenv",
  "ethers",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 

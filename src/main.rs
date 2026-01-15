@@ -1,12 +1,22 @@
+use ethers::contract::abigen;
 mod config;
 mod net;
 mod utils;
 mod contract;  // 新增合约模块
-
 use config::NetworkConfig;
 use net::{create_provider, estimate_transfer_fee, get_gas_price,execute_transfer};
 use std::error::Error;
 use utils::{wei_to_eth, wei_to_gwei};
+use std::sync::Arc;
+
+
+// 1. 生成合约绑定
+// 从 erc20_abi.json 文件生成类型安全的合约接口
+abigen!(
+    ERC20Contract,
+    "src/erc20_abi.json"
+);
+
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -98,5 +108,51 @@ async fn main() -> Result<(), Box<dyn Error>> {
     } else {
         println!("⚠️  未配置目标地址，跳过转账");
     }
+
+
+    println!("=== TASK5 Arbitrum 简单合约交互 (只读) ===\n");
+
+    // 1. 加载配置
+    let config = NetworkConfig::arbitrum_sepolia();
+    println!("✓ 网络: {}", config.name);
+    
+    // 2. 连接 RPC
+    //let provider = create_provider(&config)?;
+    let provider_arc = Arc::new(provider);
+    println!("✓ 已连接到 RPC");
+
+    // 3. 目标合约: WETH (Arbitrum Sepolia)
+    //let contract_address_str = "0x980B62Da83eFf3D4576C647993b0c1D7faf17c73";
+    let contract_address_str = "0xbC47901f4d2C5fc871ae0037Ea05c3F614690781";
+    let contract_address: ethers::types::Address = contract_address_str.parse()?;
+    println!("✓ 目标合约地址: {}", contract_address_str);
+
+    // 4. 实例化合约
+    // 注意：这里我们使用 只读 的 Arc<Provider>
+    let contract = ERC20Contract::new(contract_address, provider_arc.clone());
+
+    // 5. 调用只读方法
+    println!("\n📊 正在读取合约状态...");
+
+    // 调用 name()
+    let name = contract.name().call().await?;
+    println!("  🔹 合约名称 (name): {}", name);
+
+    // 调用 symbol()
+    let symbol = contract.symbol().call().await?;
+    println!("  🔹 代币符号 (symbol): {}", symbol);
+
+    // 调用 decimals()
+    let decimals = contract.decimals().call().await?;
+    println!("  🔹 精度 (decimals): {}", decimals);
+
+    // 调用 totalSupply()
+    let total_supply = contract.total_supply().call().await?;
+    // 简单的格式化，除以 10^decimals
+    let total_supply_fmt = utils::wei_to_eth(total_supply); // 假设精度是18，WETH通常是
+    println!("  🔹 总供应量 (totalSupply): {} (Wei: {})", total_supply_fmt, total_supply);
+
+    println!("\n✅ 合约交互成功！");
+
     Ok(())
 }
